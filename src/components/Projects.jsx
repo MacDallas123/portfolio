@@ -53,7 +53,7 @@ const projects = [
     github: GITHUB_PROFILE,
   },
   {
-    title: "Portail multitâche (FIBEM)",
+    title: "Portail multitâche",
     category: "Portail web multi-services",
     tags: ["Next.js/React", "Node.js/Express", "PostgreSQL", "Puppeteer"],
     description:
