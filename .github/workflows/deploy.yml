@@ -1,5 +1,21 @@
 name: Deploy to VPS
 
+# === Réponse à la question : combien de secrets dois-je créer sur GitHub ? ===
+#
+# Pour que ce workflow fonctionne correctement, tu dois créer les secrets suivants dans
+# les paramètres de ton dépôt GitHub (Settings > Secrets and variables > Actions):
+#
+# 1. VPS_HOST           = Adresse IP ou nom de domaine de ton serveur VPS
+# 2. VPS_USER           = Nom d’utilisateur SSH de ton VPS
+# 3. SSH_PRIVATE_KEY    = Clé privée SSH permettant la connexion (format PEM, sans mot de passe recommandé)
+# 4. VPS_PORT           = (optionnel, défaut: 22) Port SSH de ton VPS (ex: 22)
+# 5. VPS_PATH           = Chemin absolu vers le répertoire projet sur ton VPS (ex: /home/USERNAME/portfolio)
+# 6. ENV_PRODUCTION     = (optionnel, mais recommandé) Contenu de ton fichier .env pour le serveur de prod
+#
+# Résumé : AU MOINS 5 secrets obligatoires (si VPS_PORT n'est pas nécessaire, 4 suffisent mais bon usage !)
+# ENV_PRODUCTION est RECOMMANDÉ pour injecter la config prod à chaque déploiement (SMTP, etc.)
+# ==========================================================================
+
 on:
   push:
     branches:
@@ -49,3 +65,4 @@ jobs:
               echo "$ENV_PRODUCTION" > .env
             fi
             docker compose up -d --build
+       
