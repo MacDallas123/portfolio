@@ -38,7 +38,7 @@ const education = [
     school: "Université de Yaoundé I",
     period: "En cours",
     description:
-      "Mémoire sur la conception et l'implémentation d'un jumeau numérique pour la gestion intelligente des processus métier (Business Process Management).",
+      "Approfondissement des compétences en Ingénierie Dirigée par les Modèles (IDM), optimisation et tests logiciels, ainsi que traitement et analyse de données à grande échelle (Big Data).",
     color: "#6c63ff",
   },
   {
