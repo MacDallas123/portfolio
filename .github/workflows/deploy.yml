@@ -48,10 +48,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Add SSH private key
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
+      # appleboy/ssh-action@v1.0.3 doit recevoir la clé directement via l'option "key" pour éviter le problème "getKeyFile error: open private_key.pem: permission denied".
+      # On ne crée donc PLUS le fichier private_key.pem ici, la clé est injectée via `${{ secrets.SSH_PRIVATE_KEY }}` dans l'input "key".
 
       - name: Execute remote SSH commands on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -60,7 +58,7 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key_path: private_key.pem
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           envs: ENV_PRODUCTION
           script: |
@@ -70,4 +68,4 @@ jobs:
               echo "$ENV_PRODUCTION" > .env
             fi
             docker compose up -d --build
-       
+   
