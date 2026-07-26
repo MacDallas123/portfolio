@@ -4,6 +4,7 @@ export default function robots() {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://stephaneroylex.dev/sitemap.xml",
+    // sitemap: "https://stephaneroylex.dev/sitemap.xml",
+    sitemap: "https://portfolio.reimca-app.com/sitemap.xml",
   };
 }

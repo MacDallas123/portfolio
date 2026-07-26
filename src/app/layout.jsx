@@ -6,11 +6,13 @@ export const metadata = {
   keywords: ["développeur fullstack", "javascript", "typescript", "next.js", "react", "node.js", "portfolio", "freelance"],
   authors: [{ name: "Stéphane Roylex" }],
   creator: "Stéphane Roylex",
-  metadataBase: new URL("https://stephaneroylex.dev"),
+  // metadataBase: new URL("https://stephaneroylex.dev"),
+  metadataBase: new URL("https://portfolio.reimca-app.com"),
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: "https://stephaneroylex.dev",
+    // url: "https://stephaneroylex.dev",
+    url: "https://portfolio.reimca-app.com",
     title: "Stéphane Roylex — Développeur Fullstack JavaScript",
     description: "Développeur Fullstack passionné par les architectures modernes et l'expérience utilisateur. Master en Informatique.",
     siteName: "Stéphane Roylex Portfolio",
@@ -35,7 +37,8 @@ export const metadata = {
     },
   },
   alternates: {
-    canonical: "https://stephaneroylex.dev",
+    // canonical: "https://stephaneroylex.dev",
+    canonical: "https://portfolio.reimca-app.com",
   },
 };
 
@@ -58,7 +61,8 @@ export default function RootLayout({ children }) {
               name: "Stéphane Roylex",
               jobTitle: "Développeur Fullstack JavaScript",
               description: "Développeur Fullstack JavaScript & TypeScript spécialisé en Next.js, React et Node.js. Titulaire d'un Master en Informatique.",
-              url: "https://stephaneroylex.dev",
+              // url: "https://stephaneroylex.dev",
+              url: "https://portfolio.reimca-app.com",
               sameAs: [
                 "https://github.com/MacDallas123",
                 "https://www.linkedin.com/in/roylex-stephane-53a4292bb",
