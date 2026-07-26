@@ -34,12 +34,18 @@ jobs:
     steps:
       - name: Execute remote SSH commands on VPS
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          ENV_PRODUCTION: ${{ secrets.ENV_PRODUCTION }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
+          envs: ENV_PRODUCTION
           script: |
             cd ${{ secrets.VPS_PATH }}
             git pull origin ${{ github.ref_name }}
+            if [ -n "$ENV_PRODUCTION" ]; then
+              echo "$ENV_PRODUCTION" > .env
+            fi
             docker compose up -d --build
