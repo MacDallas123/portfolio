@@ -1,25 +1,10 @@
 name: Deploy to VPS
 
-# === Réponse à la question : combien de secrets dois-je créer sur GitHub ? ===
-#
-# Pour que ce workflow fonctionne correctement, tu dois créer les secrets suivants dans
-# les paramètres de ton dépôt GitHub (Settings > Secrets and variables > Actions):
-#
-# 1. VPS_HOST           = Adresse IP ou nom de domaine de ton serveur VPS
-# 2. VPS_USER           = Nom d’utilisateur SSH de ton VPS
-# 3. SSH_PRIVATE_KEY    = Clé privée SSH permettant la connexion (format PEM, sans mot de passe recommandé)
-# 4. VPS_PORT           = (optionnel, défaut: 22) Port SSH de ton VPS (ex: 22)
-# 5. VPS_PATH           = Chemin absolu vers le répertoire projet sur ton VPS (ex: /home/USERNAME/portfolio)
-# 6. ENV_PRODUCTION     = (optionnel, mais recommandé) Contenu de ton fichier .env pour le serveur de prod
-#
-# Résumé : AU MOINS 5 secrets obligatoires (si VPS_PORT n'est pas nécessaire, 4 suffisent mais bon usage !)
-# ENV_PRODUCTION est RECOMMANDÉ pour injecter la config prod à chaque déploiement (SMTP, etc.)
-# ==========================================================================
-
 on:
   push:
     branches:
       - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -43,15 +28,37 @@ jobs:
         run: npm run lint
 
   deploy:
-    name: Deploy to VPS via SSH
+    name: Deploy to VPS
     needs: lint-and-check
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
     steps:
-      # appleboy/ssh-action@v1.0.3 doit recevoir la clé directement via l'option "key" pour éviter le problème "getKeyFile error: open private_key.pem: permission denied".
-      # On ne crée donc PLUS le fichier private_key.pem ici, la clé est injectée via `${{ secrets.SSH_PRIVATE_KEY }}` dans l'input "key".
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Execute remote SSH commands on VPS
+      - name: Setup SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Copy repository files to VPS via rsync
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${VPS_PORT:-22} -H "${VPS_HOST}" >> ~/.ssh/known_hosts
+          rsync -avz --delete \
+            --exclude='.git*' \
+            --exclude='node_modules' \
+            --exclude='.next' \
+            --exclude='portfolio.zip' \
+            -e "ssh -p ${VPS_PORT:-22}" \
+            ./ ${VPS_USER}@${VPS_HOST}:${VPS_PATH}
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PATH: ${{ secrets.VPS_PATH }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+
+      - name: Build & Run Docker container on VPS
         uses: appleboy/ssh-action@v1.0.3
         env:
           ENV_PRODUCTION: ${{ secrets.ENV_PRODUCTION }}
@@ -63,9 +70,7 @@ jobs:
           envs: ENV_PRODUCTION
           script: |
             cd ${{ secrets.VPS_PATH }}
-            git pull origin main
             if [ -n "$ENV_PRODUCTION" ]; then
               echo "$ENV_PRODUCTION" > .env
             fi
             docker compose up -d --build
-   
