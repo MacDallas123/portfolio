@@ -4,7 +4,7 @@ services:
     container_name: portfolio
     restart: always
     ports:
-      - "3000:3000"
+      - "3074:3074"
     env_file:
       - path: .env
         required: false
